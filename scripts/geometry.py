@@ -7,7 +7,6 @@ def get_matrices(kp1: np.ndarray, kp2: np.ndarray, K: np.ndarray):
     kp2 = kp2[:min_points]
 
     F, _ = cv.findFundamentalMat(kp1, kp2, cv.RANSAC)
-    # E = K.T @ F @ K
     E, _ = cv.findEssentialMat(kp1, kp2, K, cv.RANSAC)
     _, R, t, _ = cv.recoverPose(E, kp1, kp2, K)
     return F, E, R, t

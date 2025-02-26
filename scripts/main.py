@@ -3,12 +3,14 @@ from features import detect_features, match_features
 from geometry import get_matrices
 from glob import glob
 from pickle import dump
-# from visualization import draw_model
+from visualization import draw_model
 
+# Image filenames
 chessboard_images = glob("../images/chess/*.jpg")
 object_images = glob("../images/object/*.jpg")
 num = len(object_images)
 
+# Feature detection
 keypoints = dict()
 for i in range(num):
     kp, desc = detect_features(object_images[i], coords_only=True)
@@ -17,6 +19,7 @@ for i in range(num):
 with open("../assets/keypoints.pkl", "wb") as file:
     dump(keypoints, file)
 
+# Feature matching
 matches = dict()
 for i in range(1, num):
     desc1 = keypoints[f"img{i}"]["descriptor"]
@@ -24,14 +27,15 @@ for i in range(1, num):
         desc2 = keypoints[f"img{j}"]["descriptor"]
         match = match_features(desc1, desc2)
         matches[f"{i}_{j}"] = [(m.distance, m.imgIdx, m.queryIdx, m.trainIdx) for m in match]
-        print(f"{i}_{j}")
 with open("../assets/matches.pkl", "wb") as file:
     dump(matches, file)
 
+# Camera calibration
 K = calibrate_camera(chessboard_images)
 with open("../assets/calibration_matrix.pkl", "wb") as file:
     dump(K, file)
-    
+
+# Epipolar geometry
 matrices = dict()
 for i in range(1, num):
     kp1 = keypoints[f"img{i}"]["points"]
@@ -42,9 +46,9 @@ for i in range(1, num):
                                 "Essential": E,
                                 "Rotation": R,
                                 "Translation": t}
-        print(f"{i}_{j}")
 with open("../assets/matrices.pkl", "wb") as file:
     dump(matrices, file)
-    
-# path = "../assets/reconstruction/dense/0/fused.ply"
-# draw_model(path)
+
+# 3D visualization
+path = "../assets/reconstruction.ply"
+draw_model(path)
