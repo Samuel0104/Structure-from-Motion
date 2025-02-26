@@ -13,8 +13,8 @@ with open("../assets/calibration_matrix.pkl", "wb") as file:
     dump(K, file)
 
 keypoints = dict()
-for i, fname in enumerate(object_images):
-    kp, desc = detect_features(fname)
+for i in range(num):
+    kp, desc = detect_features(object_images[i], coords_only=True)
     keypoints[f"img{i + 1}"] = {"points": kp,
                                 "descriptor": desc}
 with open("../assets/keypoints.pkl", "wb") as file:

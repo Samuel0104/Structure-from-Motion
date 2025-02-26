@@ -1,10 +1,12 @@
 import cv2 as cv
 import numpy as np
 
-def detect_features(image: str, return_image=False):
+def detect_features(image: str, return_image=False, coords_only=False):
     img = cv.imread(image, cv.IMREAD_GRAYSCALE)
     sift = cv.SIFT_create()
     kp, desc = sift.detectAndCompute(img, None)
+    if coords_only:
+        kp = np.float32([p.pt for p in kp])
     if return_image:
         return kp, desc, img
     return kp, desc
@@ -19,8 +21,8 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     
     images = glob("../images/object/*.jpg")
-    kp1, desc1, img2 = detect_features(images[0], True)
-    kp2, desc2, img1 = detect_features(images[1], True)
+    kp1, desc1, img2 = detect_features(images[0], return_image=True)
+    kp2, desc2, img1 = detect_features(images[1], return_image=True)
     matches = match_features(desc1, desc2)
     matches = sorted(matches, key=lambda x: x.distance)
     image = cv.drawMatches(img1, kp1, img2, kp2, matches[:50], None,
