@@ -19,8 +19,8 @@ with open("../assets/keypoints.pkl", "wb") as file:
 
 matches = dict()
 for i in range(1, num):
+    desc1 = keypoints[f"img{i}"]["descriptor"]
     for j in range(i + 1, num + 1):
-        desc1 = keypoints[f"img{i}"]["descriptor"]
         desc2 = keypoints[f"img{j}"]["descriptor"]
         match = match_features(desc1, desc2)
         matches[f"{i}_{j}"] = [(m.distance, m.imgIdx, m.queryIdx, m.trainIdx) for m in match]
@@ -34,8 +34,8 @@ with open("../assets/calibration_matrix.pkl", "wb") as file:
     
 matrices = dict()
 for i in range(1, num):
+    kp1 = keypoints[f"img{i}"]["points"]
     for j in range(i + 1, num + 1):
-        kp1 = keypoints[f"img{i}"]["points"]
         kp2 = keypoints[f"img{j}"]["points"]
         F, E, R, t = get_matrices(kp1, kp2, K)
         matrices[f"{i}_{j}"] = {"Fundamental": F,
